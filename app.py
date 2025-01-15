@@ -37,7 +37,7 @@ def delete_old_files():
                         print(f"Permission denied: Cannot delete '{file_path}'.")
                     except Exception as e:
                         print(f"An error occurred while trying to delete the file: {e}")
-        
+
 
 def get_file_age(file_path):
     try:
@@ -51,16 +51,8 @@ def get_file_age(file_path):
         return None, None
 
 
-# File path
-file_path = "path/to/your/file.txt"
-
-# Get the file's age
-age_seconds, age_days = get_file_age(file_path)
-
-
 @app.post("/delivery")
 async def save_json(data: InputData):
-
     try:
         # Generate a timestamp-based filename
         filename = datetime.now().strftime("%Y%m%d%H%M%S%f") + ".json"
