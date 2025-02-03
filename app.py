@@ -82,9 +82,9 @@ async def get_job_ids() -> list:
             try:
                 data = json.load(f)
                 if "job_id" in data:
-                    job_ids.append(data["job_id"])
+                    job_ids.append(data["lockit_url"])
             except json.JSONDecodeError:
                 print(f"Warning: Could not parse {file}")
 
     # print job IDs (equivalent to grep output)
-    return job_ids
+    return sorted(job_ids)
