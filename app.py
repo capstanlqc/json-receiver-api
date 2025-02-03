@@ -17,6 +17,8 @@ class InputData(BaseModel):
     message: str
     job_id: str
     lockit_url: str
+    consumed_chars: int
+    average_score: float
 
 
 def delete_old_files():
