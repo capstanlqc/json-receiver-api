@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import time
@@ -67,3 +68,23 @@ async def save_json(data: InputData):
         raise HTTPException(status_code=500, detail=str(e))
 
     delete_old_files()
+
+
+@app.get("/jobs")
+async def get_job_ids() -> list:
+    # get a list of JSON files in the 'responses' directory
+    json_files = glob.glob("responses/*.json")
+
+    # Extract job_id values
+    job_ids = []
+    for file in json_files:
+        with open(file, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+                if "job_id" in data:
+                    job_ids.append(data["job_id"])
+            except json.JSONDecodeError:
+                print(f"Warning: Could not parse {file}")
+
+    # print job IDs (equivalent to grep output)
+    return job_ids
