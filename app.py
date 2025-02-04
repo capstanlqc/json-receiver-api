@@ -17,8 +17,8 @@ class InputData(BaseModel):
     message: str
     job_id: str
     lockit_url: str
-    consumed_chars: int
-    average_score: float
+    consumed_chars: int | None = None # optional, defaults to None
+    average_score: float | None = None # optional, defaults to None
 
 
 def delete_old_files():
