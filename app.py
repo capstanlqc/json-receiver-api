@@ -56,6 +56,8 @@ def get_file_age(file_path):
 
 @app.post("/delivery")
 async def save_json(data: InputData):
+    # delete_old_files()
+    
     try:
         # Generate a timestamp-based filename
         filename = datetime.now().strftime("%Y%m%d%H%M%S%f") + ".json"
@@ -68,8 +70,6 @@ async def save_json(data: InputData):
         return {"message": "Data saved successfully", "filename": filename}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-    delete_old_files()
 
 
 @app.get("/jobs")
