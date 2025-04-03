@@ -108,7 +108,7 @@ async def get_job_repos():
 
 
 @app.get("/jobs/{id}")
-async def get_job(id: str) -> Dict:
+async def get_job(id: str) -> Optional[Dict]:
     jobs = await get_jobs()
-    job = next(job for job in jobs if job["job_id"] == str(id))
+    job = next((job for job in jobs if job["job_id"] == str(id)), None)
     return job
