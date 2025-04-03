@@ -3,7 +3,7 @@ import json
 import os
 import time
 from datetime import datetime
-
+from typing import Optional, List, Dict
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -14,11 +14,14 @@ os.makedirs("responses", exist_ok=True)
 
 
 class InputData(BaseModel):
+    status: str
     message: str
     job_id: str
-    lockit_url: str
+    requested_mt: bool
+    lockit_url: Optional[str] = None  # it could be None if it's not created
     consumed_chars: int | None = None # optional, defaults to None
     system_score: float | None = None # optional, defaults to None
+    confidence_label: Optional[str] = None # it will be None if MT is not requested
 
 
 def delete_old_files():
@@ -54,10 +57,10 @@ def get_file_age(file_path):
         return None, None
 
 
-@app.post("/delivery")
+@app.post("/delivery", status_code=200)
 async def save_json(data: InputData):
     # delete_old_files()
-    
+
     try:
         # Generate a timestamp-based filename
         filename = datetime.now().strftime("%Y%m%d%H%M%S%f") + ".json"
@@ -67,26 +70,45 @@ async def save_json(data: InputData):
         with open(filepath, "w") as f:
             json.dump(data.model_dump(), f, indent=4)
 
-        return {"message": "Data saved successfully", "filename": filename}
+        return {"message": "Data waz saved successfully", "filename": filename, "data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/jobs")
-async def get_job_ids() -> list:
+async def get_jobs() -> List:
     # get a list of JSON files in the 'responses' directory
     json_files = glob.glob("responses/*.json")
 
     # Extract job_id values
-    job_ids = []
+    jobs = []
     for file in json_files:
         with open(file, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
                 if "job_id" in data:
-                    job_ids.append(data["lockit_url"])
+                    jobs.append(data)
             except json.JSONDecodeError:
                 print(f"Warning: Could not parse {file}")
 
     # print job IDs (equivalent to grep output)
-    return sorted(job_ids)
+    return jobs
+
+
+@app.get("/jobs/ids")
+async def get_job_ids():
+    jobs = await get_jobs()
+    return [job["job_id"] for job in jobs]
+
+
+@app.get("/jobs/repos")
+async def get_job_repos():
+    jobs = await get_jobs()
+    return [job["lockit_url"] for job in jobs]
+
+
+@app.get("/jobs/{id}")
+async def get_job(id: str) -> Dict:
+    jobs = await get_jobs()
+    job = next(job for job in jobs if job["job_id"] == str(id))
+    return job
