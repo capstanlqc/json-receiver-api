@@ -16,8 +16,10 @@ os.makedirs("responses", exist_ok=True)
 class InputData(BaseModel):
     status: str
     message: str
+    issues: Optional[List[str]] = []
     job_id: str
     requested_mt: bool
+    used_xliff: bool
     lockit_url: Optional[str] = None  # it could be None if it's not created
     consumed_chars: int | None = None # optional, defaults to None
     system_score: float | None = None # optional, defaults to None
