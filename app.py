@@ -4,7 +4,7 @@ import os
 import time
 from datetime import datetime
 from typing import Optional, List, Dict
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -114,3 +114,8 @@ async def get_job(id: str) -> Optional[Dict]:
     jobs = await get_jobs()
     job = next((job for job in jobs if job["job_id"] == str(id)), None)
     return job
+
+
+@app.get("/healthcheck", status_code=204)
+async def health() -> Response:
+    return Response(status_code=204)
