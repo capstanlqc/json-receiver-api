@@ -19,7 +19,7 @@ class InputData(BaseModel):
     issues: Optional[List[str]] = []
     job_id: str
     requested_mt: bool
-    used_xliff: bool
+    used_xliff: Optional[bool] = None
     lockit_url: Optional[str] = None  # it could be None if it's not created
     consumed_chars: int | None = None # optional, defaults to None
     system_score: float | None = None # optional, defaults to None
